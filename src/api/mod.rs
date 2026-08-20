@@ -5,7 +5,7 @@ use rust_embed::axum::RustEmbedLayer;
 use crate::api::handlers::AppState;
 
 #[derive(RustEmbed)]
-[folder = "../../web/dist/"]
+#[folder = "../../web/dist/"]
 pub struct WebAssets;
 
 pub fn build_router(state: AppState) -> Router {
