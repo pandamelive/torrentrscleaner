@@ -1,6 +1,6 @@
 use thiserror::Error;
 use axum::response::{IntoResponse, Response};
-use http::StatusCode;
+use axum::http::StatusCode;
 
 #[derive(Error, Debug)]
 pub enum AppError {
@@ -12,6 +12,8 @@ pub enum AppError {
     Table(#[from] redb::TableError),
     #[error("db commit error:{0}")]
     Commit(#[from] redb::CommitError),
+    #[error("db storage error:{0}")]
+    Storage(#[from] redb::StorageError),
     #[error("json serde error:{0}")]
     Json(#[from] serde_json::Error),
     #[error("downloader client error:{0}")]

@@ -22,7 +22,8 @@ async fn main() -> Result<()> {
     let repo = repo::AppRepo::open(&db_path)?;
 
     // Worker Runtime：扫描任务
-    let (scan_tx, mut scan_rx) = scan_worker::worker_runtime::start_scan_worker(repo.clone()).await;
+    // start_scan_worker returns (Sender, Receiver) synchronously — do not await
+    let (scan_tx, mut scan_rx) = scan_worker::worker_runtime::start_scan_worker(repo.clone());
 
     let shared_event = Arc::new(Mutex::new(None));
     let evt_clone = shared_event.clone();
@@ -43,7 +44,9 @@ async fn main() -> Result<()> {
     let router = api::build_router(app_state);
     println!("torrent‑rs‑cleaner listen 0.0.0.0:8090");
 
-    axum::Server::bind(&"0.0.0.0:8090".parse().unwrap())
+    // use hyper::Server explicitly
+    let addr = "0.0.0.0:8090".parse().unwrap();
+    hyper::Server::bind(&addr)
         .serve(router.into_make_service())
         .await?;
 
