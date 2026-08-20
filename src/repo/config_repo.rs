@@ -9,8 +9,10 @@ impl AppRepo {
     pub fn save_config(&self, cfg:&AppConfig) -> AppResult<()> {
         let json = serde_json::to_string(cfg)?;
         let w = self.db().begin_write()?;
-        let mut t = w.open_table(TABLE_CONFIG)?;
-        t.insert("main", json.as_str())?;
+        {
+            let mut t = w.open_table(TABLE_CONFIG)?;
+            t.insert("main", json.as_str())?;
+        }
         w.commit()?;
         Ok(())
     }

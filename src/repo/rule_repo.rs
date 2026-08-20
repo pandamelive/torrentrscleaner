@@ -9,8 +9,10 @@ impl AppRepo {
     pub fn save_rules(&self, rules:&[CleanRule]) -> AppResult<()> {
         let json = serde_json::to_string(rules)?;
         let w = self.db().begin_write()?;
-        let mut t = w.open_table(TABLE_RULES)?;
-        t.insert("list", json.as_str())?;
+        {
+            let mut t = w.open_table(TABLE_RULES)?;
+            t.insert("list", json.as_str())?;
+        }
         w.commit()?;
         Ok(())
     }
